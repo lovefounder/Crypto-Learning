@@ -12,7 +12,7 @@ ipExchange = [
     63,55,47,39,31,23,15,7,
 ]
 
-keyExchage1 = [
+keyExchange1 = [
     57,49,41,33,25,17,9,1,
     58,50,42,34,26,18,10,2,
     59,51,43,35,27,19,11,3,
@@ -22,7 +22,7 @@ keyExchage1 = [
     29,21,13,5,28,20,12,4
 ]
 
-keyExchage2 = [
+keyExchange2 = [
     14,17,11,24,1,5,
     3,28,15,6,21,10,
     23,19,12,4,26,8,
@@ -124,22 +124,25 @@ def initialIpReplacement():
 def keyGenration():
     KEY = []
     key0 = [0]*56
-    key = [0]*48
     for i in range(56):
-        key0[i] = Key[keyExchage1[i]-1] 
+        key0[i] = Key[keyExchange1[i]-1] 
     c = key0[0:28]
     d = key0[28:56]
-    for i in range(16):
-        if i == 0 or i == 1 or i == 8 or i == 15:
+    for _ in range(16):
+        key = [0]*48
+        if _ == 0 or _ == 1 or _ == 8 or _ == 15:
             c = c[1:28] + c[0:1]
             d = d[1:28] + d[0:1]
         else:
             c = c[2:28] + c[0:2]
             d = d[2:28] + d[0:2]
         unionkey = c + d
-        for i in range(48):
-           key[i] = unionkey[keyExchage2[i]-1]
+        # print(unionkey)
+        for j in range(48):
+           key[j] = unionkey[keyExchange2[j]-1]
+        # print(key)
         KEY.append(key)
+        # print(KEY[_])
     return KEY
 
 # E-extention：
@@ -150,7 +153,7 @@ def E_extention( R ):
     return rightText
 
 # S-Box replacement:
-def S_BoxReplacement(KEY, rightText,):
+def S_BoxReplacement(KEY, rightText):
     changedtext = [0]*8
     tmp = [0]*48
     result = [0]*32
@@ -178,12 +181,17 @@ if __name__ == "__main__":
     leftText = chengedIp[0:32]
     rightText = chengedIp[32:64]
     KEY = keyGenration()
+    for i in range(16):
+        print(KEY[i])
 
     for i in range(16):
-        tmp = leftText
-        leftText = rightText
+        tmp = leftText[:]
+        leftText = rightText[:]
+        P_Text = P_BoxReplacement( S_BoxReplacement(KEY[i],rightText) )
         for j in range(32):
-            rightText[j] = int(tmp[j]) ^  int(P_BoxReplacement( S_BoxReplacement(KEY[i],rightText,) )[j])
+            rightText[j] = int(tmp[j]) ^  int(P_Text[j])
+        print("LeftText:",leftText)
+        print("RightText:",rightText)
 
     secretText = [0]*64
     for i in range(64):
